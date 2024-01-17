@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact name="Voucher-api:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Voucher_api_jar</output-path>
+    <root id="root">
+      <element id="archive" name="Voucher-api.jar">
+        <element id="module-output" name="Voucher-api" />
+      </element>
+    </root>
+  </artifact>
+</component>

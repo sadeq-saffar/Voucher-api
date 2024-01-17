@@ -1,8 +1,6 @@
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class Main {
@@ -53,12 +51,6 @@ public class Main {
 
 
     }
-    static class CustomLogFormatter extends Formatter {
-        @Override
-        public String format(LogRecord record) {
-            // Customize the log message format here
-            return "[" + record.getLevel() + "] " + record.getMessage() + "\n";
-        }
-    }
+
 
 }
