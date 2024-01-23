@@ -24,8 +24,9 @@ public class VoucherServer {
         factory.setHost("localhost");
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel()) {
-            channel.queueDeclare(RPC_QUEUE_NAME, false, false, false, null);
+            AMQP.Queue.DeclareOk queue = channel.queueDeclare(RPC_QUEUE_NAME, false, false, false, null);
             channel.queuePurge(RPC_QUEUE_NAME);
+
 
             channel.basicQos(1);
 
@@ -34,12 +35,15 @@ public class VoucherServer {
 
             Object monitor = new Object();
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                long startTime = System.nanoTime();
                 AMQP.BasicProperties replyProps = new AMQP.BasicProperties
                         .Builder()
                         .correlationId(delivery.getProperties().getCorrelationId())
                         .build();
 //                AsyncResponseModel response = new AsyncResponseModel();
                 Gson gson = new Gson();
+
+                logger.info(" Queue length is :  " + queue.getMessageCount());
 
                 VoucherResponse response = new VoucherResponse("Not Issued Yet");
                 try {
@@ -60,6 +64,10 @@ public class VoucherServer {
                     response.setMessage(e.getLocalizedMessage());
                 } finally {
                     logger.info(" [.] Voucher Resp " + gson.toJson(response));
+                    long endTime = System.nanoTime();
+                    logger.info(" [X] Issue Voucher time: Second " + ((endTime - startTime)/1000000000));
+//                    System.out.println(" List time: Second " + ((endTime - startTime)/1000000000) +  " For Currency : " + currency);
+
                     channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, gson.toJson(response).getBytes(StandardCharsets.UTF_8));
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                     // RabbitMq consumer worker thread notifies the RPC server owner thread
