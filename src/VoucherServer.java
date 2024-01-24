@@ -172,7 +172,7 @@ public class VoucherServer {
             response.setResponse("Success");
             response.setMessage("");
             logger.info(voucherRequest.getType() + " Issued Success !!");
-
+            clientCore.logout();
         } catch (RemoteException e) {
             System.out.println(e);
             response.setResponse("HasError");
@@ -180,6 +180,11 @@ public class VoucherServer {
             response.setException(((ServerValidationExceptionPool) e).getExceptions());
 //                            e.printStackTrace();
             logger.severe(e.getLocalizedMessage());
+            try {
+                clientCore.logout();
+            } catch (RemoteException ex) {
+//                throw new RuntimeException(ex);
+            }
         }
 //        System.out.println(a);
     }
